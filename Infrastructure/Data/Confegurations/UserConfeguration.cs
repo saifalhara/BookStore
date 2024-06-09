@@ -10,13 +10,14 @@ public class UserConfeguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Id);
         builder.Property(u => u.UserName)
             .IsRequired()
-            .HasMaxLength(20);
+            .HasMaxLength(50);
         builder.Property(u => u.Email)
             .IsRequired()
-            .HasMaxLength(20);
+            .HasMaxLength(50);
         builder.Property(u => u.Password)
             .IsRequired();
         builder.HasMany(u => u.FavouriteBooks);
         builder.HasMany(u => u.UserBooks);
+        builder.HasQueryFilter(u => !u.IsDeleted);
     }
 }

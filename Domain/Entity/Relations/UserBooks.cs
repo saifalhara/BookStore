@@ -1,5 +1,5 @@
 ﻿namespace Domain.Entity.Relations;
-public class UserBooks
+public class UserBooks : BaseEntity
 {
     public int UserId { get; set; }
     public int BookId { get; set; }

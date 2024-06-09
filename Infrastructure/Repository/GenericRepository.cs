@@ -46,7 +46,7 @@ public class GenericRepository<T>(
     public async Task<T> GetByExpression(Expression<Func<T , bool>> expression)
     {
         IQueryable<T> data = _applicationDBContext!.Set<T>();
-        return await data?.AsTracking().FirstOrDefaultAsync(expression!);
+        return await data!.AsNoTracking().FirstOrDefaultAsync(expression!);
     }
 
     /// <summary>

@@ -11,5 +11,6 @@ public class BookCategorysConfeguration : IEntityTypeConfiguration<BookCategorys
         builder.HasOne(bc => bc.Book);
         builder.Property(bc => bc.Catigory)
                           .HasConversion<int>();
+        builder.HasQueryFilter(bc => !bc.IsDeleted);
     }
 }

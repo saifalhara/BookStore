@@ -11,5 +11,6 @@ public class FavouriteBooksConfeguration : IEntityTypeConfiguration<FavouriteBoo
         builder.HasKey(fb => new{fb.BookId, fb.UserId});
         builder.HasOne(fb => fb.User);
         builder.HasOne(fb => fb.Book);
+        builder.HasQueryFilter(fb => !fb.IsDeleted);
     }
 }

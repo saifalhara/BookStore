@@ -16,7 +16,7 @@ public class GlobalExceptionHandling(RequestDelegate _next)
             {
                 Title = "Internal Server Error!",
                 Detail = ex.Message,
-                Status = 500
+                Status = StatusCodes.Status500InternalServerError
             };
             await context.Response.WriteAsJsonAsync(problemDetails);
         }

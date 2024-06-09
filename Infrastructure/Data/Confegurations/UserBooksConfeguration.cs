@@ -11,5 +11,6 @@ public class UserBooksConfeguration : IEntityTypeConfiguration<UserBooks>
         builder.HasKey(ub => new { ub.UserId , ub.BookId});
         builder.HasOne(ub => ub.Book);
         builder.HasOne(ub => ub.User);
+        builder.HasQueryFilter(ub => !ub.IsDeleted);
     }
 }

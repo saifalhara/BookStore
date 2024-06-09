@@ -2,6 +2,7 @@
 using Domain.Abstractions;
 using Domain.Dtos.BookDto.Requests;
 using Domain.Dtos.BookDto.Responses;
+using Domain.Dtos.Sheard;
 using Domain.Entity;
 using Domain.InterfaceRebositorys.UnitOfWork;
 using Domain.InterfaceServices;
@@ -35,7 +36,7 @@ public class BookServices(
     /// </summary>
     /// <param name="bookDto"></param> 
     /// <returns>Return The Result About Status If Data Deleted Or Not</returns>
-    public async Task<Result> Delete(DeleteBookDto bookDto)
+    public async Task<Result> Delete(Delete bookDto)
     {
         var book = await GetById(bookDto.Id);
         if (book.IsError)
@@ -92,5 +93,45 @@ public class BookServices(
         };
         _unitOfWork._GenericBookRepository.Update(updateBook);
         return (_unitOfWork.SaveChanges() > 0) ? Result.Success() : Result.Failure();
+    }
+
+    /// <summary>
+    /// Add Category To Book
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public async Task<Result> AddCateorys(int Id , List<Category> categorys)
+    {
+        List<BookCategorys> bookCategorys = new();
+        foreach (var category in categorys)
+        {
+            var bookCategory = new BookCategorys()
+            {
+                BookId = Id,
+                Catigory = category,
+                CreateDate = DateTime.Now,
+            };
+            bookCategorys.Add(bookCategory);
+        }
+        _unitOfWork._BooksRepository.AddCateorys(bookCategorys);
+        return (await _unitOfWork.SaveChangesAsync() > 0) ? Result.Success() : Result.Failure();
+    }
+
+    /// <summary>
+    /// Delete Category To Book
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public async Task<Result> DeleteCategory(int Id, Category category)
+    {
+        var bookCategory = new BookCategorys { BookId = Id,
+            Catigory = category ,
+            EditDate = DateTime.Now , 
+            IsDeleted = true            
+        };
+        _unitOfWork._BooksRepository.DeleteCategory(bookCategory);
+        return (await _unitOfWork.SaveChangesAsync() > 0) ? Result.Success() : Result.Failure();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Domain.Dtos.BookDto.Requests;
 
@@ -25,5 +26,6 @@ public class BookDto
     public IFormFile Book { get; set; } = null!;
 
     [Required]
+    [Range(1 , 5)]
     public int Rank { get; set; }
 }

@@ -36,7 +36,7 @@ public class AuthenticatioService(
             return AuthenticationError.Invalidcredentials;
         }
         var token = _jwtProvider.GenrateToken(user);
-        var response = new UserResponse(
+        var response = new AuthenticationResponse(
             user.Id,
             user.Email,
             user.UserName,
@@ -50,9 +50,9 @@ public class AuthenticatioService(
     /// </summary>
     /// <param name="registerDto"></param>
     /// <returns>Return Result Message</returns>
-    public async Task<Result> Register(RegisterDto registerDto)
+    public async Task<Result> Register(UserDto registerDto)
     {
-        var user = _mapper.Map<RegisterDto, User>(registerDto);
+        var user = _mapper.Map<UserDto, User>(registerDto);
         user.Email = registerDto.Email.Trim().ToLower();
         var existEmail = await _unitOfWork._GenericUserRepository.GetByExpression((u => u.Email == user.Email));
         if (existEmail is not null)

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Dtos.UserDtos.Requests;
 
-public class RegisterDto
+public class UserDto
 {
     [Required]
     [RegularExpression(EmailRegexDefaults.Standard)]
@@ -14,6 +14,6 @@ public class RegisterDto
     public string Password { get; set; } = null!;
 
     [Required]
-    [MaxLength(20)]
+    [MaxLength(50)]
     public string UserName { get; set; } = null!;
 }

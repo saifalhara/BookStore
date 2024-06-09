@@ -1,5 +1,5 @@
 ﻿namespace Domain.Dtos.UserDtos.Responses;
-public record UserResponse(
+public record AuthenticationResponse(
      int Id ,
      string Email,
      string UserName ,

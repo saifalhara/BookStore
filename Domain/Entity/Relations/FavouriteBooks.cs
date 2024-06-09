@@ -1,5 +1,5 @@
 ﻿namespace Domain.Entity.Relations;
-public class FavouriteBooks
+public class FavouriteBooks : BaseEntity
 {
     public int UserId { get; set; }
     public int BookId { get; set; }

@@ -1,7 +1,7 @@
 ﻿using Infrastructure;
 using Microsoft.Extensions.Options;
 
-namespace BookStore.OptionsSetup;
+namespace BookStore.OptionsSetup.FireBase;
 
 public class FireBaseOptionsSetup(IConfiguration _configuration) : IConfigureOptions<FireBaseOptions>
 {

@@ -28,7 +28,7 @@ public class AuthenticationsController(
 
     [HttpPost]
     [Route("Register")]
-    public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
+    public async Task<IActionResult> Register([FromBody]UserDto registerDto)
     {
         try
         {

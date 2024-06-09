@@ -1,7 +1,8 @@
 ﻿using BookStore.Controllers.Base;
 using Domain.Dtos.BookDto.Requests;
+using Domain.Dtos.Sheard;
+using Domain.Entity;
 using Domain.InterfaceServices;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStore.Controllers.Books;
@@ -58,7 +59,7 @@ public class BooksController(IBooksServices _booksServices) : BaseController
 
     [HttpDelete]
     [Route("Delete")]
-    public async Task<IActionResult> Delete([FromBody] DeleteBookDto bookDto)
+    public async Task<IActionResult> Delete([FromBody] Delete bookDto)
     {
         try
         {
@@ -84,5 +85,21 @@ public class BooksController(IBooksServices _booksServices) : BaseController
         {
             throw;
         }
+    }
+
+    [HttpPost]
+    [Route("AddCateory")]
+    public async Task<IActionResult> AddCateory(int Id , List<Category> categorys)
+    {
+        var result = await _booksServices.AddCateorys(Id , categorys);
+        return result.IsSuccess ? NoContent() : BadRequest();
+    }
+
+    [HttpDelete]
+    [Route("DeleteCategory")]
+    public async Task<IActionResult> DeleteCategory(int Id, Category categorys)
+    {
+        var result = await _booksServices.DeleteCategory(Id, categorys);
+        return result.IsSuccess ? NoContent() : BadRequest();
     }
 }
