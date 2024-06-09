@@ -10,7 +10,6 @@ public class ApplicationDBContext(DbContextOptions<ApplicationDBContext> option)
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Book> Books { get; set; }
-    public DbSet<Category> Categories { get; set; }
     public DbSet<BookCategorys> BookCatigories { get; set; }
     public DbSet<FavouriteBooks> FavouriteBooks { get; set; }
     public DbSet<UserBooks> UserBooks { get; set; }
@@ -19,7 +18,6 @@ public class ApplicationDBContext(DbContextOptions<ApplicationDBContext> option)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfiguration(new BookConfeguration());
-        modelBuilder.ApplyConfiguration(new CategoryConfeguration());
         modelBuilder.ApplyConfiguration(new BookCategorysConfeguration());
         modelBuilder.ApplyConfiguration(new UserConfeguration());
         modelBuilder.ApplyConfiguration(new UserBooksConfeguration());

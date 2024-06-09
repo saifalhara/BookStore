@@ -7,8 +7,9 @@ public class BookCategorysConfeguration : IEntityTypeConfiguration<BookCategorys
 {
     public void Configure(EntityTypeBuilder<BookCategorys> builder)
     {
-        builder.HasKey(bc => new { bc.CategoryId, bc.BookId });
+        builder.HasKey(bc => new { bc.BookId, bc.Catigory });
         builder.HasOne(bc => bc.Book);
-        builder.HasOne(bc=> bc.Catigory);
+        builder.Property(bc => bc.Catigory)
+                          .HasConversion<int>();
     }
 }
