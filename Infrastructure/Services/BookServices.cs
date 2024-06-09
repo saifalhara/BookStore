@@ -10,7 +10,8 @@ using Infrastructure.Errors.BooksError;
 namespace Infrastructure.Services;
 public class BookServices(
         IUnitOfWork _unitOfWork,
-        IMapper _mapper
+        IMapper _mapper ,
+        IFireBaseServices _fireBaseServices
     ) : IBooksServices
 {
     /// <summary>
@@ -21,7 +22,7 @@ public class BookServices(
     public async Task<Result> Create(BookDto bookDto)
     {
         var book = _mapper.Map<BookDto, Book>(bookDto);
-        book.BookUrl = "Saif";
+        book.BookUrl = await _fireBaseServices.Upload(bookDto.Book);
         book.CreateDate = DateTime.Now;
         await _unitOfWork._GenericBookRepository.Create(book);
         if (_unitOfWork.SaveChanges() <= 0)
@@ -76,12 +77,20 @@ public class BookServices(
     /// </summary>
     /// <param name="bookDto"></param>
     /// <returns>Result About Status Of Save User</returns>
-    public async Task<Result> Update(EditBookDto bookDto)
+    public async Task<Result> Update(int Id, BookDto bookDto)
     {
-        var updateBook = _mapper.Map<EditBookDto, Book>(bookDto);
-        updateBook.EditDate = DateTime.Now;
-        updateBook.BookUrl = "saif";
+        var updateBook = new Book()
+        {
+            Id = Id,
+            Author = bookDto.Author,
+            Name = bookDto.Name,
+            Description = bookDto.Description,
+            Title = bookDto.Title,
+            BookUrl = await _fireBaseServices.Upload(bookDto.Book),
+            Rank = bookDto.Rank,
+            EditDate = DateTime.Now,
+        };
         _unitOfWork._GenericBookRepository.Update(updateBook);
-        return (await _unitOfWork.SaveChangesAsync() > 0) ? Result.Success() : Result.Failure();
+        return (_unitOfWork.SaveChanges() > 0) ? Result.Success() : Result.Failure();
     }
 }

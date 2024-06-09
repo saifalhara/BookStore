@@ -1,5 +1,4 @@
 ﻿using BookStore.Controllers.Base;
-using Domain.Dtos;
 using Domain.Dtos.BookDto.Requests;
 using Domain.InterfaceServices;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookStore.Controllers.Books;
 
 [Route("api/[controller]")]
+//[Authorize]
 [ApiController]
 public class BooksController(IBooksServices _booksServices) : BaseController
 {
@@ -22,7 +22,7 @@ public class BooksController(IBooksServices _booksServices) : BaseController
         }
         catch
         {
-            throw;
+                throw;
         }
     }
 
@@ -72,12 +72,12 @@ public class BooksController(IBooksServices _booksServices) : BaseController
     }
 
     [HttpPut]
-    [Route("Update")]
-    public async Task<IActionResult> Update([FromForm] EditBookDto bookDto)
+    [Route("Update/{Id:int}")]
+    public async Task<IActionResult> Update(int Id , [FromForm]BookDto bookDto)
     {
         try
         {
-            var result = await _booksServices.Update(bookDto);
+            var result = await _booksServices.Update( Id , bookDto);
             return result.IsSuccess ? NoContent() : BadRequest(result.Error);
         }
         catch
