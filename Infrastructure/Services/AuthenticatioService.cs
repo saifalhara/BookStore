@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Application.Hangfire;
+using AutoMapper;
 using Domain.Abstractions;
 using Domain.Dtos.UserDtos.Requests;
 using Domain.Dtos.UserDtos.Responses;
@@ -13,7 +14,8 @@ namespace Infrastructure.Services;
 public class AuthenticatioService(
         IUnitOfWork _unitOfWork,
         IJwtProvider _jwtProvider,
-        IMapper _mapper
+        IMapper _mapper , 
+        IHangfireServices _hangfireServices
     ) : IAuthenticatioService
 {
 
@@ -42,6 +44,8 @@ public class AuthenticatioService(
             user.UserName,
             token
             );
+
+        _hangfireServices.StartTimer();
         return Result.Success(response);
     }
 

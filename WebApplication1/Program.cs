@@ -1,6 +1,7 @@
+#region Using
 using Application.EmailServices;
+using Application.Hangfire;
 using Application.ProfileMapper;
-using Appwrite;
 using AutoMapper;
 using BookStore.Middlewares;
 using BookStore.OptionsSetup.Email;
@@ -10,25 +11,43 @@ using Domain.InterfaceRebositorys;
 using Domain.InterfaceRebositorys.UnitOfWork;
 using Domain.InterfaceServices;
 using Domain.Rebositorys;
+using Hangfire;
 using Infrastructure.Data;
 using Infrastructure.EmailServices;
+using Infrastructure.Hangefire;
 using Infrastructure.Repository;
 using Infrastructure.Repository.UnitOfWork;
 using Infrastructure.Services;
 using Infrastructure.TokenServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
+#endregion
 
+#region Controller
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+#region Configuration
 builder.Services.AddDbContext<ApplicationDBContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+builder.Services.AddHttpContextAccessor();
+#endregion
+
+builder.Services.AddEndpointsApiExplorer();
+#endregion
+
+#region Scoop 
 builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddScoped<IFireBaseServices, FireBaseServices>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IHangfireServices, Hangefireservices >();
 builder.Services.AddScoped<IAuthenticatioService, AuthenticatioService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -36,54 +55,60 @@ builder.Services.AddScoped<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IBooksServices, BookServices>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpContextAccessor();
+#endregion
+
+#region set up
 builder.Services.ConfigureOptions<FireBaseOptionsSetup>();
 builder.Services.ConfigureOptions<EmailOptionsSetup>();
 builder.Services.ConfigureOptions<JwtOptionSetup>();
-builder.Services.ConfigureOptions<JwtBearerSetup>();
+builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, JwtBearerSetup>();
+#endregion 
+
+#region Jwt
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer();
-
-//var client = new Client();
-//client
-//    .SetEndpoint("https://cloud.appwrite.io/v1")
-//    .SetProject("66631a6e00303f28c12f")
-//    .SetKey("84bc276c10802950cbdc175a1de912ac2991b4238f0770bf71469de55f5f50de3b83a8df22b69cab3b4c51c572a3b73bed6d1f21ae1e8a611bdc836f6a99eb4859be656429ef273779344e6d109bc4a60e9a5bcf83a2eab4d523a37a910f53cc5cd2abe1fe7014eeaf676ace652c84a1bd6d0703f3d1cffe7a3efba2434f5a1a");
-
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
+    .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
     {
-        Title = "JWTToken_Auth_API",
-        Version = "v1"
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = "saif@alhara.com",
+        ValidAudience = "BookUser",
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes("lsa1Jxz+Jl8+5kP0g5YTJ23tVHZ6yQrVgGx/+Qj5gT8="))
     });
+#endregion
 
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+#region Swager
+builder.Services.AddSwaggerGen(opt =>
+{
+    opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer"
     });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
         {
+            new OpenApiSecurityScheme
             {
-                new OpenApiSecurityScheme
+                Reference = new OpenApiReference
                 {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                new string[] {}
-            }
-        });
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
+#endregion
 
+#region Mapper
 var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new MappingProfile());
@@ -91,8 +116,9 @@ var mapperConfig = new MapperConfiguration(mc =>
 
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
-builder.Services.AddSwaggerGen();
+#endregion
 
+#region PipeLine
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -109,6 +135,9 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseHangfireDashboard("/dashboard");
+
 app.MapControllers();
 
 app.Run();
+#endregion

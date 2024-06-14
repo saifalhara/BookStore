@@ -43,4 +43,15 @@ public interface IUserServices
     /// <returns>Return Result</returns>
     Task<Result> GetById(int id);
 
+    /// <summary>
+    /// Change The Date Of The User When Join The Application
+    /// </summary>
+    /// <returns></returns>
+    Task<Result> Join();
+
+    /// <summary>
+    /// Change The Date Of The User When Leave The Application
+    /// </summary>
+    /// <returns></returns>
+    Task<Result> Leave();
 }

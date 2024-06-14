@@ -20,6 +20,5 @@ public class GlobalExceptionHandling(RequestDelegate _next)
             };
             await context.Response.WriteAsJsonAsync(problemDetails);
         }
-
     }
 }

@@ -7,12 +7,14 @@ using Domain.Entity;
 using Domain.InterfaceRebositorys.UnitOfWork;
 using Domain.InterfaceServices;
 using Infrastructure.Errors.UsersError;
+using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.Services;
 
 public class UserServices(
         IMapper _mapper,
-        IUnitOfWork _unitOfWork
+        IUnitOfWork _unitOfWork , 
+        IHttpContextAccessor _httpContextAccessor
     ) : IUserServices
 {
 
@@ -43,7 +45,7 @@ public class UserServices(
             return user.Error ?? UsersError.UserNotFound;
         }
         var deleteUser = (User?)user.Response;
-        deleteUser!.IsDeleted = true; 
+        deleteUser!.IsDeleted = true;
         _unitOfWork._GenericUserRepository.Delete(deleteUser);
         return (await _unitOfWork.SaveChangesAsync() > 0) ? Result.Success() : Result.Failure();
     }
@@ -77,7 +79,7 @@ public class UserServices(
     /// </summary>
     /// <param name="userDto"></param>
     /// <returns>Return Result</returns>
-    public async Task<Result> Update(int id , UserDto userDto)
+    public async Task<Result> Update(int id, UserDto userDto)
     {
         var result = await GetById(id);
         var getUser = (UserResponseDto?)result.Response ?? new();
@@ -94,6 +96,36 @@ public class UserServices(
             Email = userDto.Email,
             UserName = userDto.UserName,
         };
+        _unitOfWork._GenericUserRepository.Update(user);
+        return (await _unitOfWork.SaveChangesAsync() > 0) ? Result.Success() : Result.Failure();
+    }
+
+    /// <summary>
+    /// Change The Date Of The User When Join The Application
+    /// </summary>
+    /// <returns></returns>
+    public async Task<Result> Join()
+    {
+        int id = Convert.ToInt32(_httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(u => u.Type == "User_Id")?.Value);
+        var result = await GetById(id);
+        var userResponse = (UserResponseDto?)result.Response ?? new();
+        userResponse.ReadTo = DateTime.Now;
+        var user = _mapper.Map<UserResponseDto, User>(userResponse);
+        _unitOfWork._GenericUserRepository.Update(user);
+        return (await _unitOfWork.SaveChangesAsync() > 0) ? Result.Success() : Result.Failure();
+    }
+
+    /// <summary>
+    /// Change The Date Of The User When Leave The Application
+    /// </summary>
+    /// <returns></returns>
+    public async Task<Result> Leave()
+    {
+        int id = Convert.ToInt32(_httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(u => u.Type == "User_Id")?.Value);
+        var result = await GetById(id);
+        var userResponse = (UserResponseDto?)result.Response ?? new();
+        userResponse.ReadFrom = DateTime.Now;
+        var user = _mapper.Map<UserResponseDto, User>(userResponse);
         _unitOfWork._GenericUserRepository.Update(user);
         return (await _unitOfWork.SaveChangesAsync() > 0) ? Result.Success() : Result.Failure();
     }

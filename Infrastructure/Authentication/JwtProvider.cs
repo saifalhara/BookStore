@@ -19,10 +19,10 @@ public class JwtProvider : IJwtProvider
     {
         var claims = new Claim[]
         {
-             new Claim(JwtRegisteredClaimNames.Sub , user.Id.ToString()) ,
+                new Claim(JwtRegisteredClaimNames.Sub , user.Id.ToString()) ,
                 new Claim(JwtRegisteredClaimNames.Email , user.Email) ,
                 new Claim("User_Id" , user.Id.ToString()),
-                new Claim("UserName" , user.UserName)
+                new Claim("User_Name" , user.UserName)
         };
 
         var signingCredintials = new SigningCredentials(
@@ -35,12 +35,12 @@ public class JwtProvider : IJwtProvider
             _options.Audience,
             claims,
             null,
-            DateTime.UtcNow.AddHours(1),
+            DateTime.Now.AddHours(1),
             signingCredintials
             );
 
-        string tokenvalue = new JwtSecurityTokenHandler().WriteToken(token);
+        string tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return tokenvalue;
+        return tokenValue;
     }
 }

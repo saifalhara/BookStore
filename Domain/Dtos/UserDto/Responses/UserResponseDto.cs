@@ -10,4 +10,6 @@ public class UserResponseDto
     public string UserName { get; set; } = null!;
     public DateTime CreatedDate { get; set; } 
     public DateTime EditDate { get; set;}
+    public DateTime ReadTo { get; set; }
+    public DateTime ReadFrom { get; set; }
 }
