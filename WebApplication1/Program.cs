@@ -22,6 +22,7 @@ using Infrastructure.Services;
 using Infrastructure.TokenServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -64,7 +65,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.ConfigureOptions<FireBaseOptionsSetup>();
 builder.Services.ConfigureOptions<EmailOptionsSetup>();
 builder.Services.ConfigureOptions<JwtOptionSetup>();
-builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, JwtBearerSetup>();
+builder.Services.ConfigureOptions<JwtBearerSetup>();
 #endregion 
 
 #region Jwt
