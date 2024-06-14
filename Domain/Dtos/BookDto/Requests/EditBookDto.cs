@@ -27,5 +27,5 @@ public class EditBookDto
     public IFormFile Book { get; set; } = null!;
 
     [Required]
-    public int Rank { get; set; }
+    public double Rank { get; set; }
 }

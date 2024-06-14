@@ -1,4 +1,4 @@
-﻿namespace Infrastructure;
+﻿namespace Infrastructure.Options.Email;
 
 public class EmailOptions
 {

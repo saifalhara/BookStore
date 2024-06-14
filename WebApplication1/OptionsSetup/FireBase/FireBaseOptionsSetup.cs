@@ -1,4 +1,4 @@
-﻿using Infrastructure;
+﻿using Infrastructure.Options.FireBase;
 using Microsoft.Extensions.Options;
 
 namespace BookStore.OptionsSetup.FireBase;

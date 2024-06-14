@@ -27,5 +27,5 @@ public class BookDto
 
     [Required]
     [Range(1 , 5)]
-    public int Rank { get; set; }
+    public double Rank { get; set; }
 }

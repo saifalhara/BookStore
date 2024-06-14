@@ -1,4 +1,4 @@
-﻿using Infrastructure;
+﻿using Infrastructure.Options.Email;
 using Microsoft.Extensions.Options;
 
 namespace BookStore.OptionsSetup.Email;

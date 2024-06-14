@@ -83,7 +83,7 @@ public class UserServices(
     {
         var result = await GetById(id);
         var getUser = (UserResponseDto?)result.Response ?? new();
-        if (getUser is null)
+        if (getUser.Id == 0)
         {
             return UsersError.NoUsers;
         }

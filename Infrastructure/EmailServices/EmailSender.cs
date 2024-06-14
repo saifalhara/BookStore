@@ -1,4 +1,5 @@
 ﻿using Application.EmailServices;
+using Infrastructure.Options.Email;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;

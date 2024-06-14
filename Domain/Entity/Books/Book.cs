@@ -7,9 +7,10 @@ public class Book : BaseEntity
     public string Name { get; set; } = null!;
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public int Rank { get; set; }
+    public double Rank { get; set; }
     public string BookUrl { get; set; } = null!;
     public string Author { get; set; }= null!;
+    public string FileName { get; set; } = null!;   
 
     #region Navigation Prorerty
     public ICollection<BookCategorys>? BookCategorys { get; set; }

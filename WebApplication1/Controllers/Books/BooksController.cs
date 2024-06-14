@@ -68,4 +68,20 @@ public class BooksController(IBooksServices _booksServices) : BaseController
         var result = await _booksServices.DeleteCategory(Id, categorys);
         return result.IsSuccess ? NoContent() : BadRequest();
     }
+
+    [HttpGet]
+    [Route("Download")]
+    public async Task<FileContentResult> Download(int Id)
+    {
+        var (bookBytes, contentType, fileName) = await _booksServices.DownloadFile(Id);
+        return File(bookBytes, contentType, fileName);
+    }
+
+    [HttpGet]
+    [Route("Like")]
+    public async Task<IActionResult> Like(int Id)
+    {
+        //var result = await _booksServices.(Id);
+        return Ok();
+    }
 }

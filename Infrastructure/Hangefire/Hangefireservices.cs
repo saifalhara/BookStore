@@ -19,22 +19,22 @@ public class Hangefireservices(
     /// </summary>
     public void StartTimer()
     {
-        RecurringJob.AddOrUpdate(() => CheckRead(), Cron.Minutely);
+        int id = Convert.ToInt32(_httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(u => u.Type == "User_Id")?.Value);
+        RecurringJob.AddOrUpdate(() => CheckRead(id), Cron.Minutely);
     }
 
     /// <summary>
     /// This is For Check If The User Read More Than One Hour Or No If Not Send Mail To Remaind Him
     /// </summary>
     /// <param name="id"></param>
-    public void CheckRead()
+    public void CheckRead(int id)
     {
-        int id = Convert.ToInt32(_httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(u => u.Type == "User_Id")?.Value);
         if (id == 0)
         {
             return;
         }
         var user = _unitOfWork._GenericUserRepository.GetByExpression((u => u.Id == id)).Result;
-        if ((!user.ReadTo.HasValue && !user.ReadFrom.HasValue) || (user?.ReadTo!.Value.Hour - user?.ReadFrom!.Value.Hour < 1))
+        if ((user.ReadTo.HasValue && user.ReadFrom.HasValue) || (user?.ReadTo!.Value.Hour - user?.ReadFrom!.Value.Hour < 1))
         {
             _emailSender.SendEmailAsync(user!.Email, "SBookStore", $@"<p>Dear {user.UserName},</p><p>Please remember to join and read at the bookstore.</p><p>Best regards,<br/>Bookstore Team</p>\");
         }

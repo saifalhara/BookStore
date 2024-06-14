@@ -11,7 +11,7 @@ using Infrastructure.Errors.BooksError;
 namespace Infrastructure.Services;
 public class BookServices(
         IUnitOfWork _unitOfWork,
-        IMapper _mapper ,
+        IMapper _mapper,
         IFireBaseServices _fireBaseServices
     ) : IBooksServices
 {
@@ -23,7 +23,7 @@ public class BookServices(
     public async Task<Result> Create(BookDto bookDto)
     {
         var book = _mapper.Map<BookDto, Book>(bookDto);
-        book.BookUrl = await _fireBaseServices.Upload(bookDto.Book);
+        (book.BookUrl, book.FileName) = await _fireBaseServices.Upload(bookDto.Book);
         book.CreateDate = DateTime.Now;
         await _unitOfWork._GenericBookRepository.Create(book);
         if (_unitOfWork.SaveChanges() <= 0)
@@ -80,6 +80,7 @@ public class BookServices(
     /// <returns>Result About Status Of Save User</returns>
     public async Task<Result> Update(int Id, BookDto bookDto)
     {
+        var (bookUrl, fileName) = await _fireBaseServices.Upload(bookDto.Book);
         var updateBook = new Book()
         {
             Id = Id,
@@ -87,7 +88,8 @@ public class BookServices(
             Name = bookDto.Name,
             Description = bookDto.Description,
             Title = bookDto.Title,
-            BookUrl = await _fireBaseServices.Upload(bookDto.Book),
+            BookUrl = bookUrl,
+            FileName = fileName,
             Rank = bookDto.Rank,
             EditDate = DateTime.Now,
         };
@@ -101,7 +103,7 @@ public class BookServices(
     /// <param name="category"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public async Task<Result> AddCateorys(int Id , List<Category> categorys)
+    public async Task<Result> AddCateorys(int Id, List<Category> categorys)
     {
         List<BookCategorys> bookCategorys = new();
         foreach (var category in categorys)
@@ -126,12 +128,27 @@ public class BookServices(
     /// <exception cref="NotImplementedException"></exception>
     public async Task<Result> DeleteCategory(int Id, Category category)
     {
-        var bookCategory = new BookCategorys { BookId = Id,
-            Catigory = category ,
-            EditDate = DateTime.Now , 
-            IsDeleted = true            
+        var bookCategory = new BookCategorys
+        {
+            BookId = Id,
+            Catigory = category,
+            EditDate = DateTime.Now,
+            IsDeleted = true
         };
         _unitOfWork._BooksRepository.DeleteCategory(bookCategory);
         return (await _unitOfWork.SaveChangesAsync() > 0) ? Result.Success() : Result.Failure();
+    }
+
+    /// <summary>
+    /// Download Book In PC
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>Return Compination Of File Byte , Content Type , File Name</returns>
+    public async Task<(byte[], string, string)> DownloadFile(int id)
+    {
+        var result = await GetById(id);
+        var book = (BookResponseDto?)result.Response;
+        string fileName = book?.FileName!;
+        return await _fireBaseServices.Download(fileName);
     }
 }

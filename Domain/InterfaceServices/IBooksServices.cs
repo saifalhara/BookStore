@@ -56,4 +56,6 @@ public interface IBooksServices
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     Task<Result> DeleteCategory(int Id, Category category);
+
+    Task<(byte[] , string , string)> DownloadFile(int id);
 }
