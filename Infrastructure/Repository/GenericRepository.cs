@@ -1,4 +1,5 @@
-﻿using Domain.InterfaceRebositorys;
+﻿using Domain.Entity.Relations;
+using Domain.InterfaceRebositorys;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -46,7 +47,7 @@ public class GenericRepository<T>(
     public async Task<T> GetByExpression(Expression<Func<T , bool>> expression)
     {
         IQueryable<T> data = _applicationDBContext!.Set<T>();
-        return await data!.AsNoTracking().FirstOrDefaultAsync(expression!);
+        return await data.AsNoTracking().FirstOrDefaultAsync(expression!);
     }
 
     /// <summary>

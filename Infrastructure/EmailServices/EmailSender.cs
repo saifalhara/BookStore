@@ -19,7 +19,7 @@ public class EmailSender(IOptions<EmailOptions> options) : IEmailSender
         mailMessage.Subject = subject;
         mailMessage.To.Add(email);
         mailMessage.Body = message;
-
+        mailMessage.IsBodyHtml = true;
         var smtpClient = new SmtpClient
         {
             Host = "smtp.gmail.com",

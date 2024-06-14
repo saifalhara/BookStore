@@ -12,6 +12,7 @@ public class UnitOfWork : IUnitOfWork
     public IAuthenticationRepository _AuthenticationRepository { get; private set; }
 
     public IBooksRepository _BooksRepository {  get; private set; }
+    public IUsersRepositroty _UsersRepository {  get; private set; }
     public IGenericRepository<Book> _GenericBookRepository {  get; private set; }
     public IGenericRepository<User> _GenericUserRepository {  get; private set; }
 
@@ -19,13 +20,15 @@ public class UnitOfWork : IUnitOfWork
                       IAuthenticationRepository authenticationRepository,
                       IBooksRepository booksRepository ,
                       IGenericRepository<Book> GenericRepository ,
-                      IGenericRepository<User> GenericUserRepository )
+                      IGenericRepository<User> GenericUserRepository , 
+                      IUsersRepositroty usersReposiroty)
     {
         _context = context;
         _AuthenticationRepository = authenticationRepository;
         _BooksRepository = booksRepository;
         _GenericBookRepository = GenericRepository;
         _GenericUserRepository = GenericUserRepository;
+        _UsersRepository = usersReposiroty;
     }
     public void Dispose()
     {

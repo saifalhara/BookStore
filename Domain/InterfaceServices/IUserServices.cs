@@ -44,6 +44,15 @@ public interface IUserServices
     Task<Result> GetById(int id);
 
     /// <summary>
+    /// Book Saved By User
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="bookId"></param>
+    /// <returns>Return Result</returns>
+    
+    Task<Result> SaveBook(int userId, int bookId);
+
+    /// <summary>
     /// Change The Date Of The User When Join The Application
     /// </summary>
     /// <returns></returns>
@@ -54,4 +63,5 @@ public interface IUserServices
     /// </summary>
     /// <returns></returns>
     Task<Result> Leave();
+
 }

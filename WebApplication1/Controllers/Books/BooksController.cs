@@ -76,12 +76,4 @@ public class BooksController(IBooksServices _booksServices) : BaseController
         var (bookBytes, contentType, fileName) = await _booksServices.DownloadFile(Id);
         return File(bookBytes, contentType, fileName);
     }
-
-    [HttpGet]
-    [Route("Like")]
-    public async Task<IActionResult> Like(int Id)
-    {
-        //var result = await _booksServices.(Id);
-        return Ok();
-    }
 }

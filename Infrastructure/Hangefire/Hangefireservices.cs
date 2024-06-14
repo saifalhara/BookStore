@@ -17,10 +17,9 @@ public class Hangefireservices(
     /// <summary>
     /// Start Timer To Check If The User Read In The Application Or No
     /// </summary>
-    public void StartTimer()
+    public void StartTimer(int id)
     {
-        int id = Convert.ToInt32(_httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(u => u.Type == "User_Id")?.Value);
-        RecurringJob.AddOrUpdate(() => CheckRead(id), Cron.Minutely);
+        RecurringJob.AddOrUpdate(() => CheckRead(id), Cron.Daily);
     }
 
     /// <summary>
@@ -36,7 +35,7 @@ public class Hangefireservices(
         var user = _unitOfWork._GenericUserRepository.GetByExpression((u => u.Id == id)).Result;
         if ((user.ReadTo.HasValue && user.ReadFrom.HasValue) || (user?.ReadTo!.Value.Hour - user?.ReadFrom!.Value.Hour < 1))
         {
-            _emailSender.SendEmailAsync(user!.Email, "SBookStore", $@"<p>Dear {user.UserName},</p><p>Please remember to join and read at the bookstore.</p><p>Best regards,<br/>Bookstore Team</p>\");
+            _emailSender.SendEmailAsync(user!.Email, "SBookStore", $@"<p>Dear {user.UserName},</p><p>Please remember to join and read at the bookstore.</p><p>Best regards,<br/>Bookstore Team</p>");
         }
     }
 }

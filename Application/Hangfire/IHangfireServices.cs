@@ -3,5 +3,5 @@
 public interface IHangfireServices
 {
     void CheckRead(int id);
-    void StartTimer();
+    void StartTimer(int id);
 }

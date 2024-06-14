@@ -10,7 +10,8 @@ namespace BookStore.Controllers.Users;
 [Authorize]
 [ApiController]
 public class UsersController(
-        IUserServices _userServices
+        IUserServices _userServices , 
+        IHttpContextAccessor _httpContextAccessor
     ) : ControllerBase
 {
     [HttpPost]
@@ -69,4 +70,12 @@ public class UsersController(
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
+    [HttpGet]
+    [Route("SaveBook")]
+    public async Task<IActionResult> SaveBook(int bookId)
+    {
+        var userId = Convert.ToInt32(_httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(u => u.Type == "User_Id")?.Value);
+        var result = await _userServices.SaveBook(userId , bookId);
+        return result.IsSuccess ? NoContent() : BadRequest() ;
+    }
 }

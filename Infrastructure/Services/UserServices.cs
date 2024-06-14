@@ -4,6 +4,7 @@ using Domain.Dtos.Sheard;
 using Domain.Dtos.UserDto.Responses;
 using Domain.Dtos.UserDtos.Requests;
 using Domain.Entity;
+using Domain.Entity.Relations;
 using Domain.InterfaceRebositorys.UnitOfWork;
 using Domain.InterfaceServices;
 using Infrastructure.Errors.UsersError;
@@ -127,6 +128,12 @@ public class UserServices(
         userResponse.ReadFrom = DateTime.Now;
         var user = _mapper.Map<UserResponseDto, User>(userResponse);
         _unitOfWork._GenericUserRepository.Update(user);
+        return (await _unitOfWork.SaveChangesAsync() > 0) ? Result.Success() : Result.Failure();
+    }
+
+    public async Task<Result> SaveBook(int userId , int bookId)
+    {
+        _unitOfWork._UsersRepository.SaveBook(new UserBooks { UserId = userId, BookId = bookId });
         return (await _unitOfWork.SaveChangesAsync() > 0) ? Result.Success() : Result.Failure();
     }
 }

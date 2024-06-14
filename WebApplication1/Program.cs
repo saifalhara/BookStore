@@ -51,6 +51,7 @@ builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IHangfireServices, Hangefireservices >();
 builder.Services.AddScoped<IAuthenticatioService, AuthenticatioService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<IUsersRepositroty, UsersRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IBooksServices, BookServices>();

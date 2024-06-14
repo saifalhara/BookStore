@@ -10,6 +10,8 @@ public interface IUnitOfWork : IDisposable
     public IBooksRepository _BooksRepository { get; }
     public IGenericRepository<Book> _GenericBookRepository { get; }
     public IGenericRepository<User> _GenericUserRepository { get; }
+    public IUsersRepositroty _UsersRepository { get; }
+
 
     public int SaveChanges();
     Task<int> SaveChangesAsync();

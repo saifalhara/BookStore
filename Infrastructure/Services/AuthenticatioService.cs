@@ -45,7 +45,7 @@ public class AuthenticatioService(
             token
             );
 
-        _hangfireServices.StartTimer();
+        _hangfireServices.StartTimer(user.Id);
         return Result.Success(response);
     }
 
