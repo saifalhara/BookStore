@@ -11,7 +11,7 @@ namespace BookStore.Controllers.Hangfires
         [Route("HangeFire")]
         public IActionResult Hangfire()
         {
-            _hangfireServices.StartTimer();
+            _hangfireServices.StartTimer(1);
             return Ok();
         }
 

@@ -2,24 +2,24 @@
 using Application.Hangfire;
 using Domain.InterfaceRebositorys.UnitOfWork;
 using Hangfire;
-using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.Hangefire;
 
 public class Hangefireservices(
         IUnitOfWork _unitOfWork,
-        IEmailSender _emailSender,
-        IHttpContextAccessor _httpContextAccessor
+        IEmailSender _emailSender
     ) : IHangfireServices
 {
-    
 
     /// <summary>
     /// Start Timer To Check If The User Read In The Application Or No
     /// </summary>
     public void StartTimer(int id)
     {
-        RecurringJob.AddOrUpdate(() => CheckRead(id), Cron.Daily);
+        RecurringJob.AddOrUpdate(
+                recurringJobId: $"CheckReadJob-{id}",
+                methodCall: () => CheckRead(id),
+                cronExpression: Cron.Daily);
     }
 
     /// <summary>
@@ -33,9 +33,14 @@ public class Hangefireservices(
             return;
         }
         var user = _unitOfWork._GenericUserRepository.GetByExpression((u => u.Id == id)).Result;
-        if ((user.ReadTo.HasValue && user.ReadFrom.HasValue) || (user?.ReadTo!.Value.Hour - user?.ReadFrom!.Value.Hour < 1))
+        if (user is { ReadFrom: null, ReadTo: null } || (user is { ReadFrom: not null, ReadTo: not null } && user?.ReadTo!.Value.Hour - user?.ReadFrom!.Value.Hour < 1))
         {
-            _emailSender.SendEmailAsync(user!.Email, "SBookStore", $@"<p>Dear {user.UserName},</p><p>Please remember to join and read at the bookstore.</p><p>Best regards,<br/>Bookstore Team</p>");
+            var emailBody = $@"
+                <p>Dear {user?.UserName},</p>
+                <p>Please remember to join and read at the bookstore.</p>
+                <p>Best regards,<br/>Bookstore Team</p>";
+
+            _emailSender.SendEmailAsync(user!.Email, "SBookStore", emailBody);
         }
     }
 }
